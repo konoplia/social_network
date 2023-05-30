@@ -21,9 +21,11 @@ class PostLikeView(UpdateAPIView):
     permission_classes = [IsAuthenticated,]
     serializer_class = PostLikeSerializer
     queryset = Post.objects.all()
+    allowed_methods = ['PATCH',]
 
 
 class PostDisLikeView(UpdateAPIView):
     permission_classes = [IsAuthenticated,]
     serializer_class = PostDisLikeSerializer
     queryset = Post.objects.all()
+    allowed_methods = ['PATCH',]
