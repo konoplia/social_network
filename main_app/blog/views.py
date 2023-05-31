@@ -1,31 +1,48 @@
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView, CreateAPIView
 
-from blog.models import Post
-from blog.serializers import PostSerializer, RetrieveUpdateDestroyPostSerializer, PostLikeSerializer, PostDisLikeSerializer
+from blog.models import BlogPost, Reaction
+from blog.serializers import BlogPostSerializer, ReactionSerializer
+from django.contrib.auth.models import User
+from rest_framework.response import Response
+from rest_framework import status
 
 
-class ListCreatePostView(ListCreateAPIView):
+class ListCreateBlogPostView(ListCreateAPIView):
     permission_classes = [IsAuthenticated,]
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
+    queryset = BlogPost.objects.all()
+    serializer_class = BlogPostSerializer
 
 
-class RetrieveUpdateDestroyPostView(RetrieveUpdateDestroyAPIView):
+class RetrieveUpdateDestroyBlogPostView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated,]
-    queryset = Post.objects.all()
-    serializer_class = RetrieveUpdateDestroyPostSerializer
+    queryset = BlogPost.objects.all()
+    serializer_class = BlogPostSerializer
 
 
-class PostLikeView(UpdateAPIView):
+class BlogPostReactionView(UpdateAPIView):
     permission_classes = [IsAuthenticated,]
-    serializer_class = PostLikeSerializer
-    queryset = Post.objects.all()
-    allowed_methods = ['PATCH',]
+    serializer_class = ReactionSerializer
+    queryset = BlogPost.objects.all()
+    allowed_methods = ['PATCH', ]
 
+    def get_object(self):
+        return super().get_object()
 
-class PostDisLikeView(UpdateAPIView):
-    permission_classes = [IsAuthenticated,]
-    serializer_class = PostDisLikeSerializer
-    queryset = Post.objects.all()
-    allowed_methods = ['PATCH',]
+    def update(self, request, *args, **kwargs):
+        blog_post_obj = self.get_object()
+        obj, created = Reaction.objects.get_or_create(
+            user=User.objects.get(id=request.user.id),
+            blog_post=blog_post_obj)
+
+        reaction_data = request.data
+        serializer = ReactionSerializer(instance=obj, data=reaction_data)
+        
+        if serializer.is_valid(raise_exception=True):
+            reaction_instance = serializer.save()
+        if created:
+            return Response(ReactionSerializer(reaction_instance).data,
+                                                    status=status.HTTP_201_CREATED)
+        else:
+            return Response(ReactionSerializer(reaction_instance).data,
+                                                    status=status.HTTP_200_OK)
