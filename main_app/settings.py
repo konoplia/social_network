@@ -163,3 +163,8 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'authentication.User'
+
+ALLOWED_HOSTS = [
+    'testserver',
+    'localhost'
+]

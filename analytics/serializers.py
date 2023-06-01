@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
 from blog.models import Reaction
 
@@ -9,7 +10,8 @@ User = get_user_model()
 class AnalyticSerializer(ModelSerializer):
     class Meta:
         model = Reaction
-        fields = '__all__'
+        field
+
 
 
 class UserLastLoginSerializer(ModelSerializer):
