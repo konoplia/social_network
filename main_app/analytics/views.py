@@ -1,17 +1,28 @@
+from django.contrib.auth import get_user_model
+
 from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView
-from blog.models import BlogPost
-from analytics.serializers import AnalyticSerializer
-# Create your views here
+
+from blog.models import Reaction
+from analytics.serializers import AnalyticSerializer, UserLastLoginSerializer
+from analytics.filters import FilterByLikeDate
+
+
+User = get_user_model()
 
 
 class LikesCounterView(ListAPIView):
-    queryset = BlogPost.objects.all()
+    permission_classes = [IsAuthenticated,]
     serializer_class = AnalyticSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['create_date',]
+    filterset_class = FilterByLikeDate
 
-#     def get(self, request, *args, **kwargs):
-#         print(self, request, args, kwargs, '--------------------')
-#         return super().get(request, *args, **kwargs)
+    def get_queryset(self):
+        queryset = Reaction.objects.filter(like=True)
+        return queryset
+
+
+class UserLastLoginView(ListAPIView):
+    permission_classes = [IsAuthenticated,]
+    serializer_class = UserLastLoginSerializer
+    queryset = User.objects
+    

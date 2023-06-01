@@ -5,7 +5,6 @@ from rest_framework_simplejwt.views import (
 )
 from authentication.views import CustomUserView
 
-
 app_name = 'authentication'
 
 
