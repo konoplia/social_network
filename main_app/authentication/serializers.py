@@ -1,17 +1,21 @@
-from rest_framework import serializers
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+from rest_framework.serializers import ModelSerializer, ValidationError
 
 import django.contrib.auth.password_validation as validators
-from django.core import exceptions
+
+User = get_user_model()
 
 
-class CustomUserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(ModelSerializer):
 
     class Meta:
         model = User
         fields = [
-            'username', 'password', 'id', 'email'
-            ]
+            'id','username',
+            'password',  'email',
+            'last_jwt_login',
+            'last_request'
+        ]
         extra_kwargs = {
             'id': {
                 'read_only': True
@@ -38,10 +42,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
         errors = dict() 
         try:
             validators.validate_password(password=password, user=User)
-        except exceptions.ValidationError as e:
-            errors['password'] = list(e.messages)
+        except ValidationError as error:
+            errors['password'] = list(error.messages)
 
         if errors:
-            raise serializers.ValidationError(errors)
+            raise ValidationError(errors)
 
         return super(CustomUserSerializer, self).validate(data)
