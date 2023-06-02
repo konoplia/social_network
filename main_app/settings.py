@@ -164,13 +164,9 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'authentication.User'
 
-# ALLOWED_HOSTS = [
-#     'testserver',
-#     'localhost'
-# ]
 ALLOWED_HOSTS = ['*']
-# settings for interactive bot
 
+# settings for interactive bot
 NUMBER_OF_USER = 10
 MAX_POSTS_PER_USER = 10
 MAX_LIKES_PER_USER = 10
