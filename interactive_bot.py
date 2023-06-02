@@ -77,10 +77,13 @@ def do_like_posts(posts_ids, tokens):
     for token in tokens:
         for _ in range(random.randrange(0, MAX_LIKES_PER_USER)):
             pk = random.choice(post_ids)
-            response = client.patch(reverse('blog:blogpost-reaction', args=(pk,)), json.dumps({
-                    'like': 'True'
-                    }), content_type='application/json', HTTP_AUTHORIZATION='Bearer '+ token)
-            post_ids.append(response.json()['id'])
+            try:
+                response = client.patch(reverse('blog:blogpost-reaction', args=(pk,)), json.dumps({
+                        'like': 'True'
+                        }), content_type='application/json', HTTP_AUTHORIZATION='Bearer '+ token)
+                post_ids.append(response.json()['id'])
+            except KeyError:
+                pass
 
 
 fake_users = register_users()
