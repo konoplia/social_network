@@ -103,3 +103,7 @@ You shoul get response with following data:
 Copy "access" value without quotes, and put in the authorization window in the upper right corner. And push **Authorize** button. After that you are authorized user, and can make any request.
 
 ## Test
+For run tests in container shall run command:
+```sh
+./manage.py test
+```

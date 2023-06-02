@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 
 from rest_framework import status
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 
 from authentication.serializers import CustomUserSerializer
@@ -9,7 +9,7 @@ from authentication.serializers import CustomUserSerializer
 User = get_user_model()
 
 
-class CustomUserView(ListCreateAPIView):
+class CustomUserView(CreateAPIView):
 
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer

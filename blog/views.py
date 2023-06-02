@@ -2,7 +2,9 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
+
 
 from blog.models import BlogPost, Reaction
 from blog.serializers import BlogPostSerializer, ReactionSerializer
@@ -20,6 +22,13 @@ class RetrieveUpdateDestroyBlogPostView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated,]
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
+
+    def check_object_permissions(self, request, obj):
+        current_user_id = request.user.id
+        obj_owner_id = obj.user.id
+        if current_user_id != obj_owner_id and request.method != 'GET':
+            raise PermissionDenied('You can only change posts made by you!')
+        return super().check_object_permissions(request, obj)
 
 
 class BlogPostReactionView(UpdateAPIView):
@@ -39,7 +48,7 @@ class BlogPostReactionView(UpdateAPIView):
 
         reaction_data = request.data
         serializer = ReactionSerializer(instance=obj, data=reaction_data)
-        
+
         if serializer.is_valid(raise_exception=True):
             reaction_instance = serializer.save()
         if created:
