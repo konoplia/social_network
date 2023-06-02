@@ -1,30 +1,32 @@
 import os
 import json
+import random
+import django
+
+from faker import Faker
 from django.urls import reverse
+from django.conf import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main_app.settings')
-import django
-from django.conf import settings
 
 if not settings.configured:
     django.setup()
-from faker import Faker
+
 from rest_framework.test import APIRequestFactory
 from rest_framework.test import APIClient
-import random
 
+from main_app.settings import NUMBER_OF_USER, MAX_POSTS_PER_USER, MAX_LIKES_PER_USER
 
-NUMBER_OF_USER = 10
-MAX_POSTS_PER_USER = 10
-MAX_LIKES_PER_USER = 10
 
 fake = Faker()
 factory = APIRequestFactory()
 client = APIClient()
 
 
-
 def register_users():
+    """
+    functions whic creating and register users in app
+    """
     fake_users = {}
     for _ in range(NUMBER_OF_USER):
         user_name = fake.first_name()
@@ -36,7 +38,11 @@ def register_users():
         }), content_type='application/json')
     return fake_users
 
+
 def get_tokens(fake_users):
+    """
+    get jwt tokens
+    """
     fake_user_tokens = []
     for user in fake_users.values():
         try:
@@ -48,7 +54,11 @@ def get_tokens(fake_users):
             pass
     return fake_user_tokens
 
+
 def create_posts(tokens):
+    """
+    creating random quantity of posts
+    """
     post_ids = []
     for token in tokens:
         for _ in range(random.randrange(0, MAX_POSTS_PER_USER)):
@@ -60,6 +70,10 @@ def create_posts(tokens):
 
 
 def do_like_posts(posts_ids, tokens):
+    """
+    like random post
+    every user do random quantity likes
+    """
     for token in tokens:
         for _ in range(random.randrange(0, MAX_LIKES_PER_USER)):
             pk = random.choice(post_ids)
@@ -73,3 +87,6 @@ fake_users = register_users()
 fake_users_tokens = get_tokens(fake_users)
 post_ids = create_posts(fake_users_tokens)
 do_like_posts(post_ids, fake_users_tokens)
+
+print(f'Created {len(fake_users)} users')
+print(f'Created {len(post_ids)} posts')
