@@ -13,8 +13,6 @@ class CustomUserSerializer(ModelSerializer):
         fields = [
             'id','username',
             'password',  'email',
-            'last_jwt_login',
-            'last_request'
         ]
         extra_kwargs = {
             'id': {
