@@ -13,7 +13,7 @@ class BlogPostSerializer(ModelSerializer):
         model = BlogPost
         fields = [
             'id',
-            'content',
+            'content', 
             'like',
             'dislike'
         ]

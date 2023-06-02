@@ -10,7 +10,7 @@ User = get_user_model()
 class AnalyticSerializer(ModelSerializer):
     class Meta:
         model = Reaction
-        field
+        fields = '__all__'
 
 
 
